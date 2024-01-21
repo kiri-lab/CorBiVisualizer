@@ -11,6 +11,7 @@ import javafx.scene.*;
 import javafx.stage.Stage;
 import javafx.scene.shape.*;
 import javafx.application.Platform;
+import corbivisualizer.communication.*;
 
 public class App extends Application
 {
@@ -27,7 +28,8 @@ public class App extends Application
         rect.setY(10);
         rect.setWidth(100);
         rect.setHeight(10);
-        new Thread(() -> updateGraph()).start();
+        CorBiCoreReader corbiReader = new CorBiCoreReader(height -> updateHeight(height));
+        new Thread(corbiReader::readDummy).start();
         root.getChildren().add(rect);
         stage.setScene(scene);
         stage.show();
@@ -47,33 +49,4 @@ public class App extends Application
         });
     }
 
-    public static void updateGraph()
-    {
-        // HACK いいからプロトタイピングだ！！
-        // TODO 雑な書き方なので、Javaがプロセスを離すとブロックorデットロックになるかも。
-
-        // TODO この辺は別のクラスに切り分けしておいてくれい
-        ProcessBuilder pb = new ProcessBuilder("../../dummyProcess/main");//　 FIXME　なんかこの辺、win macで違うっぽい
-        pb.redirectErrorStream(true);
-
-        try
-        {
-            Process process = pb.start();
-            //System.out.println(process.pid()); //掴んだプロセスのID取得
-
-            BufferedReader bReader = new BufferedReader(
-                    new InputStreamReader(process.getInputStream(), Charset.defaultCharset()));
-            String line;
-            while ((line = bReader.readLine()) != null)
-            {
-                updateHeight(Integer.parseInt(line));
-                System.out.println("catched: " + line);
-            }
-            process.destroy();
-        }
-        catch(IOException e)
-        {
-            e.printStackTrace();
-        }
-    }
 }
