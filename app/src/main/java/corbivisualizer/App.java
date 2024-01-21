@@ -6,14 +6,53 @@ package corbivisualizer;
 import java.io.*;
 import java.nio.charset.Charset;
 
-public class App
+import javafx.application.Application;
+import javafx.scene.*;
+import javafx.stage.Stage;
+import javafx.scene.shape.*;
+import javafx.application.Platform;
+
+public class App extends Application
 {
 
+    private static Rectangle rect = new Rectangle();
+
+    @Override
+    public void start(Stage stage)
+    {
+        Group root = new Group();
+        // TODO この辺のプロパティ、どっかでまとめて定義しておいてくだちい
+        Scene scene = new Scene(root, 800, 600);
+        rect.setX(10);
+        rect.setY(10);
+        rect.setWidth(100);
+        rect.setHeight(10);
+        new Thread(() -> updateGraph()).start();
+        root.getChildren().add(rect);
+        stage.setScene(scene);
+        stage.show();
+    }
+
     public static void main(String[] args)
+    {
+        launch();
+    }
+
+    public static void updateHeight(double height)
+    {
+        // TODO rectを継承したクラスに実装しておいてくれい
+        Platform.runLater(() ->
+        {
+            rect.setHeight(height);
+        });
+    }
+
+    public static void updateGraph()
     {
         // HACK いいからプロトタイピングだ！！
         // TODO 雑な書き方なので、Javaがプロセスを離すとブロックorデットロックになるかも。
 
+        // TODO この辺は別のクラスに切り分けしておいてくれい
         ProcessBuilder pb = new ProcessBuilder("../../dummyProcess/main");//　 FIXME　なんかこの辺、win macで違うっぽい
         pb.redirectErrorStream(true);
 
@@ -27,6 +66,7 @@ public class App
             String line;
             while ((line = bReader.readLine()) != null)
             {
+                updateHeight(Integer.parseInt(line));
                 System.out.println("catched: " + line);
             }
             process.destroy();
