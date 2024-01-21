@@ -3,12 +3,37 @@
  */
 package corbivisualizer;
 
-public class App {
-    public String getGreeting() {
-        return "Hello World!";
-    }
+import java.io.*;
+import java.nio.charset.Charset;
 
-    public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
+public class App
+{
+
+    public static void main(String[] args)
+    {
+        // HACK いいからプロトタイピングだ！！
+        // TODO 雑な書き方なので、Javaがプロセスを離すとブロックorデットロックになるかも。
+
+        ProcessBuilder pb = new ProcessBuilder("../../dummyProcess/main");//　 FIXME　なんかこの辺、win macで違うっぽい
+        pb.redirectErrorStream(true);
+
+        try
+        {
+            Process process = pb.start();
+            //System.out.println(process.pid()); //掴んだプロセスのID取得
+
+            BufferedReader bReader = new BufferedReader(
+                    new InputStreamReader(process.getInputStream(), Charset.defaultCharset()));
+            String line;
+            while ((line = bReader.readLine()) != null)
+            {
+                System.out.println("catched: " + line);
+            }
+            process.destroy();
+        }
+        catch(IOException e)
+        {
+            e.printStackTrace();
+        }
     }
 }
