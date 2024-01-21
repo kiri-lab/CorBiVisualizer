@@ -46,6 +46,11 @@ java {
     }
 }
 
+javafx{
+    version = "21.0.1"
+    modules = [ 'javafx.controls', 'javafx.fxml', 'javafx.graphics' ]
+}
+
 application {
     // Define the main class for the application.
     mainClass = 'corbivisualizer.App'
