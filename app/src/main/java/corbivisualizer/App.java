@@ -28,9 +28,14 @@ public class App extends Application
         rect.setY(10);
         rect.setWidth(100);
         rect.setHeight(10);
-        CorBiCoreReader corbiReader = new CorBiCoreReader(height -> updateHeight(height));
-        new Thread(corbiReader::readDummy).start();
         root.getChildren().add(rect);
+        CorBiCoreReader corbiReader = new CorBiCoreReader(height -> updateHeight(height)).setDummy();
+        new Thread(corbiReader::read).start();
+        stage.setOnCloseRequest(event ->
+        {
+            corbiReader.destroy();
+            System.exit(0);
+        });
         stage.setScene(scene);
         stage.show();
     }
