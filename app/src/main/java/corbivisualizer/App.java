@@ -10,8 +10,8 @@ import javafx.application.Application;
 import javafx.scene.*;
 import javafx.stage.Stage;
 import javafx.scene.shape.*;
-import javafx.application.Platform;
 import corbivisualizer.communication.*;
+import corbivisualizer.ui.*;
 
 public class App extends Application
 {
@@ -24,12 +24,11 @@ public class App extends Application
         Group root = new Group();
         // TODO この辺のプロパティ、どっかでまとめて定義しておいてくだちい
         Scene scene = new Scene(root, 800, 600);
-        rect.setX(10);
-        rect.setY(10);
-        rect.setWidth(100);
-        rect.setHeight(10);
-        root.getChildren().add(rect);
-        CorBiCoreReader corbiReader = new CorBiCoreReader(height -> updateHeight(height)).setDummy();
+        //DynamicBar dynamicBar = new DynamicBar(400, 300, 90, 100, 10);
+        DynamicBar dynamicBar = new DynamicBar();
+        dynamicBar.setX(0).setY(10).setAngle(270).setWidth(10);
+        root.getChildren().add(dynamicBar);
+        CorBiCoreReader corbiReader = new CorBiCoreReader(length -> dynamicBar.updateLength(length)).setDummy();
         new Thread(corbiReader::read).start();
         stage.setOnCloseRequest(event ->
         {
@@ -43,15 +42,6 @@ public class App extends Application
     public static void main(String[] args)
     {
         launch();
-    }
-
-    public static void updateHeight(double height)
-    {
-        // TODO rectを継承したクラスに実装しておいてくれい
-        Platform.runLater(() ->
-        {
-            rect.setHeight(height);
-        });
     }
 
 }
