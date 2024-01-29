@@ -12,11 +12,13 @@ import javafx.stage.Stage;
 import javafx.scene.shape.*;
 import corbivisualizer.communication.*;
 import corbivisualizer.ui.*;
+import java.util.*;
+import corbivisualizer.ui.Gauge;
 
 public class App extends Application
 {
 
-    private static Rectangle rect = new Rectangle();
+    private List<Gauge> gauges = new ArrayList<>();
 
     @Override
     public void start(Stage stage)
@@ -28,7 +30,13 @@ public class App extends Application
         DynamicBar dynamicBar = new DynamicBar();
         dynamicBar.setX(0).setY(10).setAngle(270).setWidth(10);
         root.getChildren().add(dynamicBar);
-        CorBiCoreReader corbiReader = new CorBiCoreReader(length -> dynamicBar.updateLength(length)).setDummy();
+        gauges.add(dynamicBar);
+
+        DynamicCircle dynamicCircle = new DynamicCircle(200, 200, 0, 100, 100, 90);
+        root.getChildren().add(dynamicCircle);
+        gauges.add(dynamicCircle);
+
+        CorBiCoreReader corbiReader = new CorBiCoreReader(length -> this.updateGauges(length)).setDummy();
         new Thread(corbiReader::read).start();
         stage.setOnCloseRequest(event ->
         {
@@ -37,6 +45,11 @@ public class App extends Application
         });
         stage.setScene(scene);
         stage.show();
+    }
+
+    public void updateGauges(double length)
+    {
+        gauges.forEach(gauge -> gauge.updateLength(length));
     }
 
     public static void main(String[] args)
