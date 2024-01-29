@@ -24,7 +24,8 @@ public class CorBiCoreReader
 
     public CorBiCoreReader setDummy()
     {
-        pb = new ProcessBuilder("../../dummyProcess/main");//　 FIXME　なんかこの辺、win macで違うっぽい
+        pb = new ProcessBuilder("../../CorBidummyProcess/Debug/dummyProcess.exe"); //win
+        pb = new ProcessBuilder("../../dummyProcess/main"); // mac
         return this;
     }
 
