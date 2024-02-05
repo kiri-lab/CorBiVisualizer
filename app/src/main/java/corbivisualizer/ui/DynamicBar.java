@@ -5,7 +5,7 @@ import javafx.application.Platform;
 import javafx.scene.Group;
 import javafx.scene.transform.Rotate;
 
-public class DynamicBar extends Group
+public class DynamicBar extends Group implements Gauge
 {
     private double x;
     private double y;
