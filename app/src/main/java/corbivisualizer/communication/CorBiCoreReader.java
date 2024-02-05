@@ -30,7 +30,7 @@ public class CorBiCoreReader
 
     public CorBiCoreReader setCorBiCore()
     {
-        pb = new ProcessBuilder("../../CorBiCore/main");//　 FIXME　なんかこの辺、win macで違うっぽい
+        pb = new ProcessBuilder("../../CorBiCore/CorBiCore");//　 FIXME　なんかこの辺、win macで違うっぽい
         return this;
     }
 
@@ -45,10 +45,15 @@ public class CorBiCoreReader
             BufferedReader bReader = new BufferedReader(
                     new InputStreamReader(process.getInputStream(), Charset.defaultCharset()));
             String line;
+            double heartRate = 0;
+            double preHeartRate = 0;
             while ((line = bReader.readLine()) != null)
             {
-                hRateListener.onHeartRateChanged(Double.parseDouble(line));
+                heartRate = Double.parseDouble(line);
+                double HR = (preHeartRate + heartRate) / 2;
+                hRateListener.onHeartRateChanged(HR);
                 System.out.println("catched: " + line);
+                preHeartRate = heartRate;
             }
             this.destroy();
         }
