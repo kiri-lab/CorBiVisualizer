@@ -36,7 +36,7 @@ public class App extends Application
         root.getChildren().add(dynamicCircle);
         gauges.add(dynamicCircle);
 
-        CorBiCoreReader corbiReader = new CorBiCoreReader(length -> this.updateGauges(length)).setDummy();
+        CorBiCoreReader corbiReader = new CorBiCoreReader(length -> this.updateGauges(length)).setCorBiCore();
         new Thread(corbiReader::read).start();
         stage.setOnCloseRequest(event ->
         {
