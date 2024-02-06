@@ -29,10 +29,11 @@ public class App extends Application
         //DynamicBar dynamicBar = new DynamicBar(400, 300, 90, 100, 10);
         DynamicBar dynamicBar = new DynamicBar();
         dynamicBar.setX(0).setY(10).setAngle(270).setWidth(10);
+        dynamicBar.setMinValue(0).setMaxValue(65535);
         root.getChildren().add(dynamicBar);
         gauges.add(dynamicBar);
 
-        DynamicCircle dynamicCircle = new DynamicCircle(200, 200, 0, 100, 100, 90);
+        DynamicCircle dynamicCircle = new DynamicCircle(200, 200, 0, 100, 100, 90, 0, 65535);
         root.getChildren().add(dynamicCircle);
         gauges.add(dynamicCircle);
 
