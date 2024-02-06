@@ -12,6 +12,25 @@ public class DynamicBar extends Group implements Gauge
     private double angle;
     private Rectangle rect;
     private Rotate rotate;
+    private double minValue = 0;
+    private double maxValue = 65535;
+    private double maxLength = 500;
+
+    public DynamicBar(double x, double y, double angle, double length, double width, double minValue, double maxValue)
+    {
+        this.x = x;
+        this.y = y;
+        this.angle = angle;
+        this.rect = new Rectangle(x, y, width, length);
+        this.rotate = new Rotate();
+        this.minValue = minValue;
+        this.maxValue = maxValue;
+
+        updateRotate();
+
+        this.rect.getTransforms().add(rotate);
+        this.getChildren().add(rect);
+    }
 
     public DynamicBar(double x, double y, double angle, double length, double width)
     {
@@ -68,8 +87,21 @@ public class DynamicBar extends Group implements Gauge
         this.rotate.setAngle(this.angle);
     }
 
-    public void updateLength(double length)
+    public DynamicBar setMinValue(double value)
     {
+        this.minValue = value;
+        return this;
+    }
+
+    public DynamicBar setMaxValue(double value)
+    {
+        this.maxValue = value;
+        return this;
+    }
+
+    public void updateLength(double value)
+    {
+        double length = (value - this.minValue) / (this.maxValue - this.minValue) * this.maxLength;
         Platform.runLater(() ->
         {
             this.rect.setHeight(length);
