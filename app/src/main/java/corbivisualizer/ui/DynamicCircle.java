@@ -13,6 +13,26 @@ public class DynamicCircle extends Group implements Gauge
     private double angle;
     private Arc arc;
     private Rotate rotate;
+    private double minValue = 0;
+    private double maxValue = 65535;
+
+    public DynamicCircle(double x, double y, double angle, double radiusX, double radiusY, double length,
+            double minValue, double maxValue)
+    {
+        this.x = x;
+        this.y = y;
+        this.angle = angle;
+        this.arc = new Arc(x, y, radiusX, radiusY, 0, length);
+        this.arc.setType(ArcType.ROUND);
+        this.rotate = new Rotate();
+        this.minValue = minValue;
+        this.maxValue = maxValue;
+
+        updateRotate();
+
+        this.arc.getTransforms().add(rotate);
+        this.getChildren().add(arc);
+    }
 
     public DynamicCircle(double x, double y, double angle, double radiusX, double radiusY, double length)
     {
@@ -78,8 +98,9 @@ public class DynamicCircle extends Group implements Gauge
         this.rotate.setAngle(this.angle);
     }
 
-    public void updateLength(double length)
+    public void updateLength(double value)
     {
+        double length = (value - this.minValue) / (this.maxValue - this.minValue) * 360;
         Platform.runLater(() ->
         {
             this.arc.setLength(length);
