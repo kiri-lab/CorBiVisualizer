@@ -6,46 +6,129 @@ package corbivisualizer;
 import java.io.*;
 import java.nio.charset.Charset;
 
+import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.*;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.PhongMaterial;
 import javafx.stage.Stage;
 import javafx.scene.shape.*;
+import javafx.scene.transform.Rotate;
 import corbivisualizer.communication.*;
+import corbivisualizer.generative.PerlinNoise;
 import corbivisualizer.ui.*;
 import java.util.*;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
+
+import org.checkerframework.checker.units.qual.C;
+
 import corbivisualizer.ui.Gauge;
+import corbivisualizer.generative.PerlinNoise;
 
 public class App extends Application
 {
 
     private List<Gauge> gauges = new ArrayList<>();
 
+    private double time = 0;
+
     @Override
     public void start(Stage stage)
     {
         Group root = new Group();
-        // TODO この辺のプロパティ、どっかでまとめて定義しておいてくだちい
         Scene scene = new Scene(root, 800, 600);
-        //DynamicBar dynamicBar = new DynamicBar(400, 300, 90, 100, 10);
+
+        Canvas canvas = new Canvas(800, 600);
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+        //drawLandscape(canvas.getGraphicsContext2D());
+
+        root.getChildren().add(canvas);
+
         DynamicBar dynamicBar = new DynamicBar();
-        dynamicBar.setX(0).setY(10).setAngle(270).setWidth(10);
+        dynamicBar.setX(0).setY(10).setAngle(270).setWidth(10).setColor(Color.WHITE);
         root.getChildren().add(dynamicBar);
         gauges.add(dynamicBar);
 
-        DynamicCircle dynamicCircle = new DynamicCircle(200, 200, 0, 100, 100, 90);
-        root.getChildren().add(dynamicCircle);
-        gauges.add(dynamicCircle);
+        // DynamicCircle dynamicCircle = new DynamicCircle(200, 200, 0, 100, 100, 90);
+        // root.getChildren().add(dynamicCircle);
+        // gauges.add(dynamicCircle);
 
-        CorBiCoreReader corbiReader = new CorBiCoreReader(length -> this.updateGauges(length)).setCorBiCore();
+        CorBiCoreReader corbiReader = new CorBiCoreReader(length -> this.updateGauges(length)).setDummy();
         new Thread(corbiReader::read).start();
         stage.setOnCloseRequest(event ->
         {
             corbiReader.destroy();
             System.exit(0);
         });
+
+        stage.setTitle("JavaFX sandbox");
         stage.setScene(scene);
         stage.show();
+
+        new AnimationTimer()
+        {
+            @Override
+            public void handle(long now)
+            {
+                drawLandscape(gc, time);
+                time += 0.05;
+
+            }
+        }.start();
     }
+
+    private void drawLandscape(GraphicsContext gc, double time)
+    {
+        int width = (int) gc.getCanvas().getWidth();
+        int height = (int) gc.getCanvas().getHeight();
+        gc.clearRect(0, 0, width, height); // 画面をクリア
+
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                double nx = x / (double) width, // x座標を0から1の範囲に正規化
+                        ny = y / (double) height; // y座標を0から1の範囲に正規化
+                double noiseValue = PerlinNoise.noise(nx * 2, ny * 2, time); // パーリンノイズ関数に時間を加える
+                double colorValue = (noiseValue + 1) / 2; // パーリンノイズの値を0から1の範囲に調整
+                colorValue = Math.pow(colorValue, 2);
+
+                Color base = Color.color(0.639, 0.408, 0.867);// vivid purple
+                Color light = Color.color(1, 1, 0); // vivid yellow
+                Color color = base.interpolate(light, colorValue);
+
+                gc.setFill(color);
+                gc.fillRect(x, y, 1, 1);
+            }
+        }
+    }
+    // @Override
+    // public void start(Stage stage)
+    // {
+    //     Group root = new Group();
+    //     // TODO この辺のプロパティ、どっかでまとめて定義しておいてくだちい
+    //     Scene scene = new Scene(root, 800, 600);
+    //     //DynamicBar dynamicBar = new DynamicBar(400, 300, 90, 100, 10);
+    //     DynamicBar dynamicBar = new DynamicBar();
+    //     dynamicBar.setX(0).setY(10).setAngle(270).setWidth(10);
+    //     root.getChildren().add(dynamicBar);
+    //     gauges.add(dynamicBar);
+
+    //     DynamicCircle dynamicCircle = new DynamicCircle(200, 200, 0, 100, 100, 90);
+    //     root.getChildren().add(dynamicCircle);
+    //     gauges.add(dynamicCircle);
+
+    //     CorBiCoreReader corbiReader = new CorBiCoreReader(length -> this.updateGauges(length)).setCorBiCore();
+    //     new Thread(corbiReader::read).start();
+    //     stage.setOnCloseRequest(event ->
+    //     {
+    //         corbiReader.destroy();
+    //         System.exit(0);
+    //     });
+    //     stage.setScene(scene);
+    //     stage.show();
+    // }
 
     public void updateGauges(double length)
     {
