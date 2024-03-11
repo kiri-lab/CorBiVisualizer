@@ -4,6 +4,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.application.Platform;
 import javafx.scene.Group;
 import javafx.scene.transform.Rotate;
+import javafx.scene.paint.Color;
 
 public class DynamicBar extends Group implements Gauge
 {
@@ -12,6 +13,7 @@ public class DynamicBar extends Group implements Gauge
     private double angle;
     private Rectangle rect;
     private Rotate rotate;
+    private Color color;
 
     public DynamicBar(double x, double y, double angle, double length, double width)
     {
@@ -58,6 +60,13 @@ public class DynamicBar extends Group implements Gauge
     public DynamicBar setWidth(double width)
     {
         this.rect.setWidth(width);
+        return this;
+    }
+
+    public DynamicBar setColor(Color color)
+    {
+        this.color = color;
+        this.rect.setFill(color);
         return this;
     }
 
